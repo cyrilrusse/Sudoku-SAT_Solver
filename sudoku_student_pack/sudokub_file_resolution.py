@@ -194,18 +194,29 @@ def sudoku_solve(filename):
 if len(sys.argv) != 2:
     exit("This program requires exactly one argument (file with the sudoku)\n")
 
-sudoku = sudoku_read(str(sys.argv[1]))
-sudoku_print(sys.stdout, sudoku)
-
-myfile = open("sudoku.cnf", 'w')
-N = len(sudoku)
-myfile.write("p cnf "+str(N)+str(N)+str(N)+" "+
+sudoku_file = str(sys.argv[1])
+for i in range(100):
+    sudoku_filename = sudoku_file + "/sudoku"
+    if i<10:
+        sudoku_filename += "0"+str(i)
+    else:
+        sudoku_filename += str(i)
+    sudoku_filename_output = sudoku_filename + ".sol"
+    sudoku_filename += ".txt"
+    sudoku = sudoku_read(sudoku_filename)
+    myfile = open("sudoku.cnf", 'w')
+    N = len(sudoku)
+    myfile.write("p cnf "+str(N)+str(N)+str(N)+" "+
              str(sudoku_constraints_number(sudoku))+"\n")
-sudoku_generic_constraints(myfile, N)
-sudoku_specific_constraints(myfile, sudoku)
-myfile.close()
-sys.stdout.write("cnf written in sudoku.cnf\n")
-sys.stdout.write("launching SAT solver\n")
-sudoku = sudoku_solve("sudoku.cnf")
-sudoku_print(sys.stdout, sudoku)
+    sudoku_generic_constraints(myfile, N)
+    sudoku_specific_constraints(myfile, sudoku)
+    myfile.close()
+    sys.stdout.write("launching SAT solver\n")
+    sudoku = sudoku_solve("sudoku.cnf")
+    print(sudoku_filename_output)
+    output_file = open(sudoku_filename_output, 'w')
+    sudoku_print(output_file, sudoku)
+    output_file.close()
+
+
 sys.stdout.write("done\n")
